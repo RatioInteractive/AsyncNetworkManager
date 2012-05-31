@@ -61,6 +61,11 @@ static AsyncNetworkManager* singleton = nil;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     DLog(@"Network conn failed %@", error);
+    AsyncURLConnection* asyncConn = (AsyncURLConnection*)connection;
+    if(asyncConn.block)
+    {
+        asyncConn.block(asyncConn.response, asyncConn.data, error);
+    }
     [self.urlConnections removeObject:connection];
 }
 
