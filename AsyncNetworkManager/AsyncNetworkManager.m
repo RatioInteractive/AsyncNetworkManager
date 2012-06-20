@@ -51,6 +51,7 @@ static AsyncNetworkManager* singleton = nil;
     if (conn) {
         // We need to save this connection so that we can call the completion handler when complete
         [self.urlConnections addObject:conn];
+        conn.data = [[NSMutableData alloc] init];
         [conn release];
     }
 }
@@ -64,18 +65,21 @@ static AsyncNetworkManager* singleton = nil;
     [self.urlConnections removeObject:connection];
 }
 
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    DLog(@"Receiving data conn %@", connection);
-    AsyncURLConnection* asyncConn = (AsyncURLConnection*)connection;
-    asyncConn.data = data;
-}
-
 -(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     DLog(@"Receiving conn %@ response %@", connection, response);
     AsyncURLConnection* asyncConn = (AsyncURLConnection*)connection;
     asyncConn.response = response;
+    
+    // Incoming response means we need to reset our data object
+    asyncConn.data = [[NSMutableData alloc] init];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    DLog(@"Receiving data conn %@", connection);
+    AsyncURLConnection* asyncConn = (AsyncURLConnection*)connection;
+    [asyncConn.data appendData:data];
 }
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection

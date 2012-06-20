@@ -12,7 +12,7 @@
 
 @property (nonatomic, copy) BOOL (^block)(NSURLResponse *, NSData *, NSError *);
 @property (nonatomic, retain) NSURLResponse* response;
-@property (nonatomic, retain) NSData* data;
+@property (nonatomic, retain) NSMutableData* data;
 
 -(id)initWithRequest:(NSURLRequest *)request delegate:(id)delegate startImmediately:(BOOL)startImmediately completionHandler:(BOOL (^)(NSURLResponse *, NSData *, NSError *))handler;
 
