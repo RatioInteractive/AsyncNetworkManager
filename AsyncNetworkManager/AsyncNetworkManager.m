@@ -18,6 +18,7 @@
 
 @implementation AsyncNetworkManager
 @synthesize urlConnections;
+@synthesize statusDelegate;
 
 static AsyncNetworkManager* singleton = nil;
 
@@ -78,6 +79,16 @@ static AsyncNetworkManager* singleton = nil;
     
     // Incoming response means we need to reset our data object
     asyncConn.data = [[NSMutableData alloc] init];
+}
+
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
+{
+    float progress = [[NSNumber numberWithInteger:totalBytesWritten] floatValue];
+    float total = [[NSNumber numberWithInteger: totalBytesExpectedToWrite] floatValue];
+    
+    DLog(@"Sending data percent complete %.2f", progress/total);
+    
+    [self.statusDelegate updateStatus:progress/total];
 }
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
